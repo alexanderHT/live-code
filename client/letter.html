@@ -95,14 +95,53 @@
     </div>
     <!-- content -->
 
+  <!-- Modal Structure -->
+  <div id="modal-edit" class="modal">
+    <div class="modal-content">
+      <h4 class="green-text">Edit letter</h4>
+      <!-- input modal edit -->
+      <h4>Letter</h4>
+      <div class="row">
+        <div class="input-field col s12">
+          <input value="" id="letter_edit" type="text" class="validate">
+          <label class="active" for="letter-edit">letter</label>
+        </div>
+      </div>
+      <h4>Frequency</h4>
+      <div class="row">
+        <div class="input-field col s12">
+          <input value="" id="frequency_edit" type="text" class="validate">
+          <label class="active" for="frequency_edit">Frequency</label>
+        </div>
+      </div>
+      <!-- input modal edit -->
+    </div>
+    <div class="modal-footer">
+      <a class="waves-effect green btn" onclick=`preEditLetter('${}')`>Edit</a>
+    </div>
+  </div>
+
     <!--Import jQuery before materialize.js-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
     <script type="text/javascript">
 
+
+
     $( document ).ready(function() {
         getAllLetter()
+        $('.modal').modal();
+        Materialize.updateTextFields();
     });
+
+    /* pre edit letter */
+    function preEditLetter(id){
+      $('#modal-edit').modal('open');
+      let input_edit_letter = $(`#${id} td`)[0].innerHTML
+      let input_edit_frequency = $(`#${id} td`)[1].innerHTML
+      $('#letter_edit').val(input_edit_letter)
+      $('#frequency_edit').val(input_edit_frequency)
+    }
 
     /* get all leter from databse */
     function getAllLetter(){
@@ -119,7 +158,7 @@
               <td class="center">${result[i].frequency}</td>
               <td>
                 <div class="center">
-                  <a class="waves-effect green btn" onclick="editLetter('${result[i]._id}')">Edit</a>
+                  <a class="waves-effect green btn" onclick="preEditLetter('${result[i]._id}')">Edit</a>
                   <a class="waves-effect green btn" onclick="deleteLetter('${result[i]._id}')">Delete</a>
                 </div>
               </td>
@@ -153,51 +192,52 @@
             <td class="center">${result.frequency}</td>
             <td>
               <div class="center">
-                <a class="waves-effect green btn" onclick="editLetter('${result._id}')">Edit</a>
+                <a class="waves-effect green btn" onclick="preEditLetter('${result._id}')">Edit</a>
                 <a class="waves-effect green btn" onclick="deleteLetter('${result._id}')">Delete</a>
               </div>
             </td>
           </tr>
           `
           $('#letter-list').prepend(temp)
-          // reset
+          // reset input
           $('#letter_input').val(''),
           $('#frequency_input').val('')
         }
       });
     }
 
-    // /* edit letter */
-    // function editLetter(id){
-    //   $.ajax({
-    //     url: "/api/getWeather",
-    //     type: 'put',
-    //     data: {
-    //       id: id,
-    //       letter: '',
-    //       frequency: ''
-    //     },
-    //     success: function( result ) {
-    //       $( "#weather-temp" ).html( "<strong>" + result + "</strong> degrees" );
-    //     }
-    //   });
-    // }
-    //
-    // /* delete letter */
-    // function deleteLetter(id){
-    //   $.ajax({
-    //     url: "/api/getWeather",
-    //     type: 'put',
-    //     data: {
-    //       id: '',
-    //       letter: '',
-    //       frequency: ''
-    //     },
-    //     success: function( result ) {
-    //       $( "#weather-temp" ).html( "<strong>" + result + "</strong> degrees" );
-    //     }
-    //   });
-    // }
+    /* edit letter */
+    function editLetter(edit_id){
+      alert(edit_id)
+      $.ajax({
+        url: "/api/getWeather",
+        type: 'put',
+        data: {
+          id: edit_id,
+          letter: $(`#${edit_id}`),
+          frequency: ''
+        },
+        success: function( result ) {
+          $( "#weather-temp" ).html( "<strong>" + result + "</strong> degrees" );
+        }
+      });
+    }
+
+
+    /* delete letter */
+    function deleteLetter(delete_id){
+      $.ajax({
+        url: "http://localhost:3000/api/letters",
+        type: 'delete',
+        data: {
+          id: delete_id
+        },
+        success: function( result ) {
+          $(`#${result._id}`).remove()
+        }
+      });
+    }
+
     // /* search letter */
     // function searchLetter(){
     //   $.ajax({
