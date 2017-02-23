@@ -8,6 +8,12 @@ var mongoose = require('mongoose')
 var cors = require('cors')
 mongoose.Promise = global.Promise
 
+// apa saja yang dibutuhkan untuk besok
+var passport = require('passport')
+var LocalStrategy = require('passport-local').Strategy
+var passwordHash = require('password-hash')
+var jwt = require('jsonwebtoken')
+
 var index = require('./routes/index')
 var users = require('./routes/users')
 var letters = require('./routes/letters')
@@ -20,6 +26,38 @@ app.use(cors())
 
 // setup database
 mongoose.connect('mongodb://localhost/liveCode')
+
+// required model user
+var modelUser = require('./models/model.user')
+
+// passport
+passport.use('test-login', new LocalStrategy(function (usernameInput, passwordInput, done) {
+
+  // loging username from database
+  modelUser.findOne({ username: usernameInput }, function (err, data) {
+    if (!data) {
+      // if not found get data throw msg err
+      done(null, false, {message: 'incorect username'})
+    }else {
+      // data ternyata ada neh bro
+      if (passwordHash.verify(passwordInput, data.password)) {
+        done(null, data)
+      }else {
+        // if password wrong throw msg err
+        done(null, false, {message: 'incorect password'})
+      }
+    }
+  })
+}))
+
+// passport serializeUser
+passport.serializeUser(function (user, callback) {
+  callback(null, user)
+})
+
+// passport initialize & session
+app.use(passport.initialize())
+app.use(passport.session())
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
