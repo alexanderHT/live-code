@@ -5,6 +5,7 @@ var logger = require('morgan')
 var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
 var mongoose = require('mongoose')
+var cors = require('cors')
 mongoose.Promise = global.Promise
 
 var index = require('./routes/index')
@@ -13,6 +14,9 @@ var letters = require('./routes/letters')
 var dates = require('./routes/dates')
 
 var app = express()
+
+// setup cors
+app.use(cors())
 
 // setup database
 mongoose.connect('mongodb://localhost/liveCode')

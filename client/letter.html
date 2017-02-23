@@ -33,6 +33,7 @@
     <div class="container">
       <!-- input letter -->
       <div class="row">
+        <h5 class="green-text">INPUT LETTER : </h5>
         <div class="col s12">
           <div class="row">
             <div class="input-field col s5">
@@ -46,12 +47,51 @@
               <label for="icon_frequency">Frequency</label>
             </div>
             <div class="col s2">
-              <a class="waves-effect green btn right" onclick="createLetter()">button</a>
+              <a class="waves-effect green btn right" onclick="createLetter()">CREATE</a>
             </div>
           </div>
         </div>
       </div>
       <!-- input letter -->
+
+      <!-- search -->
+      <div class="row">
+        <h5 class="green-text">SEARCH LETTER : </h5>
+        <div class="col s12">
+          <div class="row">
+            <div class="input-field col s5">
+              <i class="material-icons prefix">textsms</i>
+              <input id="letter_search" type="text" class="validate" max="1">
+              <label for="icon_letter">Letter</label>
+            </div>
+            <div class="input-field col s5">
+              <i class="material-icons prefix">trending_up</i>
+              <input id="frequency_search" type="text" class="validate">
+              <label for="icon_frequency">Frequency</label>
+            </div>
+            <div class="col s2">
+              <a class="waves-effect green btn right" onclick="searchLetter()">SEARCH</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- search -->
+
+      <!-- letter list -->
+      <div id="letter-table">
+        <table>
+          <thead>
+            <tr>
+                <th data-field="Letter" class="center">Letter</th>
+                <th data-field="Frequency" class="center">Frequency</th>
+                <th data-field="Action" class="center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="letter-list">
+          </tbody>
+        </table>
+      </div>
+      <!-- letter list -->
     </div>
     <!-- content -->
 
@@ -59,6 +99,122 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
     <script type="text/javascript">
+
+    $( document ).ready(function() {
+        getAllLetter()
+    });
+
+    /* get all leter from databse */
+    function getAllLetter(){
+      $.ajax({
+        url: "http://localhost:3000/api/letters",
+        type: 'get',
+        success: function( result ) {
+          var temp = '';
+          for (var i = 0; i < result.length; i++) {
+            temp +=
+            `
+            <tr id="${result[i]._id}">
+              <td class="center">${result[i].letter}</td>
+              <td class="center">${result[i].frequency}</td>
+              <td>
+                <div class="center">
+                  <a class="waves-effect green btn" onclick="editLetter('${result[i]._id}')">Edit</a>
+                  <a class="waves-effect green btn" onclick="deleteLetter('${result[i]._id}')">Delete</a>
+                </div>
+              </td>
+            </tr>
+            `
+          }
+
+          $('#letter-list').prepend(temp)
+        }
+      });
+    }
+
+    /* create letter */
+    function createLetter(){
+      console.log('masuk');
+      console.log($('#letter_input'));
+      console.log($('#frequency_input'));
+      $.ajax({
+        url: "http://localhost:3000/api/letters",
+        type: 'post',
+        data: {
+          letter: $('#letter_input').val(),
+          frequency: $('#frequency_input').val()
+        },
+        success: function( result ) {
+          console.log(result);
+          let temp =
+          `
+          <tr id="${result._id}">
+            <td class="center">${result.letter}</td>
+            <td class="center">${result.frequency}</td>
+            <td>
+              <div class="center">
+                <a class="waves-effect green btn" onclick="editLetter('${result._id}')">Edit</a>
+                <a class="waves-effect green btn" onclick="deleteLetter('${result._id}')">Delete</a>
+              </div>
+            </td>
+          </tr>
+          `
+          $('#letter-list').prepend(temp)
+          // reset
+          $('#letter_input').val(''),
+          $('#frequency_input').val('')
+        }
+      });
+    }
+
+    // /* edit letter */
+    // function editLetter(id){
+    //   $.ajax({
+    //     url: "/api/getWeather",
+    //     type: 'put',
+    //     data: {
+    //       id: id,
+    //       letter: '',
+    //       frequency: ''
+    //     },
+    //     success: function( result ) {
+    //       $( "#weather-temp" ).html( "<strong>" + result + "</strong> degrees" );
+    //     }
+    //   });
+    // }
+    //
+    // /* delete letter */
+    // function deleteLetter(id){
+    //   $.ajax({
+    //     url: "/api/getWeather",
+    //     type: 'put',
+    //     data: {
+    //       id: '',
+    //       letter: '',
+    //       frequency: ''
+    //     },
+    //     success: function( result ) {
+    //       $( "#weather-temp" ).html( "<strong>" + result + "</strong> degrees" );
+    //     }
+    //   });
+    // }
+    // /* search letter */
+    // function searchLetter(){
+    //   $.ajax({
+    //     url: "/api/getWeather",
+    //     type: 'put',
+    //     data: {
+    //       id: '',
+    //       letter: '',
+    //       frequency: ''
+    //     },
+    //     success: function( result ) {
+    //       $( "#weather-temp" ).html( "<strong>" + result + "</strong> degrees" );
+    //     }
+    //   });
+    // }
+
+
 
     </script>
   </body>
