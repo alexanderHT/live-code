@@ -117,7 +117,7 @@
       <!-- input modal edit -->
     </div>
     <div class="modal-footer">
-      <a class="waves-effect green btn" onclick=`preEditLetter('${}')`>Edit</a>
+      <a class="waves-effect green btn" onclick="editLetter()" id="btn-edit">Edit</a>
     </div>
   </div>
 
@@ -125,7 +125,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
     <script type="text/javascript">
-
+    var passingIDEdit = '';
 
 
     $( document ).ready(function() {
@@ -141,6 +141,7 @@
       let input_edit_frequency = $(`#${id} td`)[1].innerHTML
       $('#letter_edit').val(input_edit_letter)
       $('#frequency_edit').val(input_edit_frequency)
+      passingIDEdit = id
     }
 
     /* get all leter from databse */
@@ -207,18 +208,19 @@
     }
 
     /* edit letter */
-    function editLetter(edit_id){
-      alert(edit_id)
+    function editLetter(){
       $.ajax({
-        url: "/api/getWeather",
+        url: "http://localhost:3000/api/letters",
         type: 'put',
         data: {
-          id: edit_id,
-          letter: $(`#${edit_id}`),
-          frequency: ''
+          id: passingIDEdit,
+          letter: $('#letter_edit').val(),
+          frequency: $('#frequency_edit').val()
         },
         success: function( result ) {
-          $( "#weather-temp" ).html( "<strong>" + result + "</strong> degrees" );
+          $(`#${passingIDEdit} td`)[0].innerHTML = result.letter
+          $(`#${passingIDEdit} td`)[1].innerHTML = result.frequency
+          $('#modal-edit').modal('close');
         }
       });
     }
@@ -238,23 +240,38 @@
       });
     }
 
-    // /* search letter */
-    // function searchLetter(){
-    //   $.ajax({
-    //     url: "/api/getWeather",
-    //     type: 'put',
-    //     data: {
-    //       id: '',
-    //       letter: '',
-    //       frequency: ''
-    //     },
-    //     success: function( result ) {
-    //       $( "#weather-temp" ).html( "<strong>" + result + "</strong> degrees" );
-    //     }
-    //   });
-    // }
+    /* search letter */
+    function searchLetter(){
+      $.ajax({
+        url: "http://localhost:3000/api/letters/search",
+        type: 'post',
+        data: {
+          letter: $('#letter_search').val(),
+          frequency: $('#frequency_search').val()
+        },
+        success: function( result ) {
+          var temp = '';
+          $('#letter-list tr').remove()
+          for (var i = 0; i < result.length; i++) {
+            temp +=
+            `
+            <tr id="${result[i]._id}">
+              <td class="center">${result[i].letter}</td>
+              <td class="center">${result[i].frequency}</td>
+              <td>
+                <div class="center">
+                  <a class="waves-effect green btn" onclick="preEditLetter('${result[i]._id}')">Edit</a>
+                  <a class="waves-effect green btn" onclick="deleteLetter('${result[i]._id}')">Delete</a>
+                </div>
+              </td>
+            </tr>
+            `
+          }
 
-
+          $('#letter-list').prepend(temp)
+        }
+      });
+    }
 
     </script>
   </body>
