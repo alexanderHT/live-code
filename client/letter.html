@@ -59,18 +59,15 @@
         <h5 class="green-text">SEARCH LETTER : </h5>
         <div class="col s12">
           <div class="row">
-            <div class="input-field col s5">
+            <div class="input-field col s6">
               <i class="material-icons prefix">textsms</i>
-              <input id="letter_search" type="text" class="validate" max="1">
+              <input id="letter_search" type="text" class="validate" max="1" oninput="searchLetter()">
               <label for="icon_letter">Letter</label>
             </div>
-            <div class="input-field col s5">
+            <div class="input-field col s6">
               <i class="material-icons prefix">trending_up</i>
-              <input id="frequency_search" type="text" class="validate">
+              <input id="frequency_search" type="text" class="validate" oninput="searchLetter()">
               <label for="icon_frequency">Frequency</label>
-            </div>
-            <div class="col s2">
-              <a class="waves-effect green btn right" onclick="searchLetter()">SEARCH</a>
             </div>
           </div>
         </div>
@@ -242,6 +239,10 @@
 
     /* search letter */
     function searchLetter(){
+      if ( !$('#letter_search').val() && !$('#frequency_search').val() ) {
+        getAllLetter()
+      }
+
       $.ajax({
         url: "http://localhost:3000/api/letters/search",
         type: 'post',
